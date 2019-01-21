@@ -26,34 +26,8 @@ for i=0:1:size(neurons,2)
 
             net = narxnet(inputDelays,feedbackDelays,neurons(i),'open',trainFcn);
             
-            [x,xi,ai,t] = preparets(net,X,{},T);
-
-            % Setup Division of Data for Training, Validation, Testing
-            net.divideParam.trainRatio = 70/100;
-            net.divideParam.valRatio = 15/100;
-            net.divideParam.testRatio = 15/100;
-            net.divideFcn='divideblock';
-
-            net.trainParam.goal = 0;	    
-            net.trainParam.mu=1.0000e-003; 	
-            net.trainParam.mu_inc=10;		
-            net.trainParam.mu_dec=1; 		
-            net.trainParam.min_grad = 1.0000e-015 	
-            net.trainParam.epochs =5000;			
-            net.trainParam.max_fail=5000;
-
-            % Train the Network
-            [net,tr] = train(net,x,t,xi,ai);
-
-            dryer_net{aux} = net;
-            dryer_tr{aux} = tr;
+            dryer_net
             
-            dryer_x{aux}  = x ;
-            dryer_xi{aux}  = xi;
-            dryer_ai{aux}  = ai;
-            dryer_t{aux}  = t ;
-            
-            clear net, tr, x, xi, ai, t;
             aux = aux+1;
         end
      
@@ -67,6 +41,30 @@ end
 
 
 
+% Prepare the Data for Training and Simulation
+% The function PREPARETS prepares timeseries data for a particular network,
+% shifting time by the minimum amount to fill input states and layer
+% states. Using PREPARETS allows you to keep your original time series data
+% unchanged, while easily customizing it for networks with differing
+% numbers of delays, with open loop or closed loop feedback modes.
+[x,xi,ai,t] = preparets(net,X,{},T);
+
+% Setup Division of Data for Training, Validation, Testing
+net.divideParam.trainRatio = 70/100;
+net.divideParam.valRatio = 15/100;
+net.divideParam.testRatio = 15/100;
+net.divideFcn='divideblock';
+
+net.trainParam.goal = 0;	    
+net.trainParam.mu=1.0000e-003; 	
+net.trainParam.mu_inc=10;		
+net.trainParam.mu_dec=1; 		
+net.trainParam.min_grad = 1.0000e-015 	
+net.trainParam.epochs =5000;			
+net.trainParam.max_fail=5000;
+
+% Train the Network
+[net,tr] = train(net,x,t,xi,ai);
 
 % Test the Network
 y = net(x,xi,ai);
