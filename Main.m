@@ -52,7 +52,7 @@ dryer_DB = load_dryer_DB(filename);
 input_dryer =  cell2mat(dryer_DB(:,1));
 output_dryer = cell2mat(dryer_DB(:,2));
 
-% network_dryer;
+network_dryer;
 
 % % %Network DRYER
 % % 
