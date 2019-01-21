@@ -3,11 +3,19 @@ clear all
 filename = 'milk\monthly-milk-production-pounds-p.csv';
 startRow = 2;
 
-milk_DB = load_Milk_DB(filename,startRow);
+[inputMilk, outputMilk ]= load_Milk_DB(filename);
+ inputMilk = posixtime(inputMilk);
+
+%  network_milk;
 
 filename = 'temperature\mean-daily-temperature-fisher-ri.csv';
 
-temperature_DB = load_temperature_DB(filename,startRow);
+[inputTemperature, outputTemperature ] = load_temperature_DB(filename,startRow);
+ inputTemperature = posixtime(inputTemperature);
+ 
+outputTemperature = strrep(outputTemperature, '?', '-');
+outputTemperature = str2double(outputTemperature);
+
 
 
 % Sampling:
@@ -27,7 +35,7 @@ reactor_DB = load_reactor(filename);
 input_reactor =  cell2mat(reactor_DB(:,[2:3]));
 output_reactor = cell2mat(reactor_DB(:,4));
 
-network_reactor;
+% network_reactor;
 
 % Sampling:
 % Number:
@@ -43,7 +51,7 @@ dryer_DB = load_dryer_DB(filename);
 input_dryer =  cell2mat(dryer_DB(:,1));
 output_dryer = cell2mat(dryer_DB(:,2));
 
-network_dryer;
+% network_dryer;
 
 % % %Network DRYER
 % % 
