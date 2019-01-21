@@ -17,6 +17,7 @@ outputTemperature = strrep(outputTemperature, '?', '-');
 outputTemperature = str2double(outputTemperature);
 
 
+%  network_temperature;
 
 % Sampling:
 % 	0.1 min
