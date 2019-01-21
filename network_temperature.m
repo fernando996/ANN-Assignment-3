@@ -35,6 +35,15 @@ net = narxnet(inputDelays,feedbackDelays,hiddenLayerSize,'open',trainFcn);
 net.divideParam.trainRatio = 70/100;
 net.divideParam.valRatio = 15/100;
 net.divideParam.testRatio = 15/100;
+net.divideFcn='divideblock';
+
+net.trainParam.goal = 0;	    
+net.trainParam.mu=1.0000e-003; 	
+net.trainParam.mu_inc=10;		
+net.trainParam.mu_dec=1; 		
+net.trainParam.min_grad = 1.0000e-015 	
+net.trainParam.epochs =5000;			
+net.trainParam.max_fail=5000;
 
 % Train the Network
 [net,tr] = train(net,x,t,xi,ai);
