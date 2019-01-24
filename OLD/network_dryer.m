@@ -26,6 +26,13 @@ for i=1:1:size(neurons,2)
 
             net = narxnet(inputDelays,feedbackDelays,neurons(i),'open',trainFcn{w});
             
+%             net = setwb(net, rand(5));
+            net = setwb(net, -2.4 + (2.4+2.4)*rand(10,1));
+%             IW = 0.01*randn(0,4);
+%             net.IW{1,1} = IW;
+          dryer_IW_initial{aux} = net.IW{1,1};
+          dryer_b_initial{aux} = net.b{1};
+            
             [x,xi,ai,t] = preparets(net,X,{},T);
 
             % Setup Division of Data for Training, Validation, Testing
@@ -33,7 +40,8 @@ for i=1:1:size(neurons,2)
             net.divideParam.valRatio = 15/100;
             net.divideParam.testRatio = 15/100;
             net.divideFcn='divideblock';
-
+            
+         
             net.trainParam.goal = 0;	    
             net.trainParam.mu=1.0000e-003; 	
             net.trainParam.mu_inc=10;		
@@ -58,7 +66,7 @@ for i=1:1:size(neurons,2)
             y = net(x,xi,ai);
             dryer_y{aux} = y;
             dryer_e{aux} = gsubtract(t,y);
-            dryer_performance{aux} = perform(net,t,y)
+            dryer_performance{aux} = perform(net,t,y); %%MSE
             
             % Closed Loop Network
             % Use this network to do multi-step prediction.
@@ -70,8 +78,36 @@ for i=1:1:size(neurons,2)
 
             [dryer_xc{aux},dryer_xic{aux},dryer_aic{aux},dryer_tc{aux}] = preparets( dryer_netc{aux},X,{},T);
             dryer_yc{aux} = netc(dryer_xc{aux},dryer_xic{aux},dryer_aic{aux});
-            dryer_closedLoopPerformance{aux} = perform(dryer_net{aux},dryer_tc{aux},dryer_yc{aux})
+            dryer_closedLoopPerformance{aux} = perform(dryer_net{aux},dryer_tc{aux},dryer_yc{aux});
 
+            % Step-Ahead Prediction Network
+            % For some applications it helps to get the prediction a timestep early.
+            % The original network returns predicted y(t+1) at the same time it is
+            % given y(t+1). For some applications such as decision making, it would
+            % help to have predicted y(t+1) once y(t) is available, but before the
+            % actual y(t+1) occurs. The network can be made to return its output a
+            % timestep early by removing one delay so that its minimal tap delay is now
+            % 0 instead of 1. The new network returns the same outputs as the original
+            % network, but outputs are shifted left one timestep.
+            nets = removedelay(net);
+            dryer_nets{aux} = nets;
+            dryer_nets{aux}.name = [dryer_nets{aux}.name ' - Predict One Step Ahead'];
+%             view(nets)
+            [dryer_xs{aux},dryer_xis{aux},dryer_ais{aux},dryer_ts{aux}] = preparets(nets,X,{},T);
+            dryer_ys{aux} = nets(dryer_xs{aux},dryer_xis{aux},dryer_ais{aux});
+            dryer_stepAheadPerformance{aux} = perform(nets,dryer_ts{aux},dryer_ys{aux});
+            
+          dryer_IW_final{aux} = net.IW{1,1};
+          dryer_b_final{aux} = net.b{1};
+%           
+%         CorrcoefYT = corrcoef(y,t)
+%         
+%         x = randn(998,1);
+% y = randn(998,1);
+
+            A{aux} = [cell2mat(y') cell2mat(t')];
+            R{aux} = corrcoef(A)
+   
             clear net, tr, x, xi, ai, t, y;
             aux = aux+1;
         end
@@ -89,18 +125,3 @@ end
 
 
 
-% % Step-Ahead Prediction Network
-% % For some applications it helps to get the prediction a timestep early.
-% % The original network returns predicted y(t+1) at the same time it is
-% % given y(t+1). For some applications such as decision making, it would
-% % help to have predicted y(t+1) once y(t) is available, but before the
-% % actual y(t+1) occurs. The network can be made to return its output a
-% % timestep early by removing one delay so that its minimal tap delay is now
-% % 0 instead of 1. The new network returns the same outputs as the original
-% % network, but outputs are shifted left one timestep.
-% nets = removedelay(net);
-% nets.name = [net.name ' - Predict One Step Ahead'];
-% view(nets)
-% [xs,xis,ais,ts] = preparets(nets,X,{},T);
-% ys = nets(xs,xis,ais);
-% stepAheadPerformance = perform(nets,ts,ys)
