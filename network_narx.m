@@ -28,6 +28,9 @@ for i=1:1:size(neurons,2)
             
 %             net = setwb(net, rand(5));
             net = setwb(net, -2.4 + (2.4+2.4)*rand(10,1));
+            net.inputs{1}.processFcns={'mapstd'};
+            net.outputs{2}.processFcns={'mapstd'};
+
 
              data_save.IW_initial{aux} = net.IW{1,1};
              data_save.b_initial{aux} = net.b{1};

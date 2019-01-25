@@ -66,6 +66,7 @@ input = input_reactor;
 output = output_reactor ;
 
 clear data_save;
+inputVal = 2;
 network_fitnet;
 
 data_save_reactor= data_save;
@@ -90,6 +91,7 @@ input = input_dryer;
 output = output_dryer ;
 
 clear data_save;
+inputVal = 1;
 network_fitnet;
 
 data_save_dryer= data_save;
