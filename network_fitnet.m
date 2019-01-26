@@ -25,7 +25,7 @@ for i=1:1:size(neurons,2)
         for w=1:1:length(trainFcn)
             
             net = fitnet(neurons(i),trainFcn{w});
-            net = setwb(net, -2.4/inputVal + (2.4/inputVal+2.4/inputVal)*rand(10,1));
+            net = setwb(net, -2.4/inputVal + (2.4/inputVal+2.4/inputVal)*rand(5));
             net.inputs{1}.processFcns={'mapstd'};
             net.outputs{2}.processFcns={'mapstd'};
 

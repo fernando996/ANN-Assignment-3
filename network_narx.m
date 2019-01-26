@@ -27,7 +27,7 @@ for i=1:1:size(neurons,2)
             net = narxnet(inputDelays,feedbackDelays,neurons(i),'open',trainFcn{w});
             
 %             net = setwb(net, rand(5));
-            net = setwb(net, -2.4 + (2.4+2.4)*rand(10,1));
+            net = setwb(net, -2.4 + (2.4+2.4)*rand(5));
             net.inputs{1}.processFcns={'mapstd'};
             net.outputs{2}.processFcns={'mapstd'};
 
